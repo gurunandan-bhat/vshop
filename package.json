@@ -10,5 +10,8 @@
   "description": "",
   "devDependencies": {
     "prettier-plugin-go-template": "^0.0.15"
+  },
+  "dependencies": {
+    "@tabler/core": "^1.0.0-beta21"
   }
 }
