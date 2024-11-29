@@ -1,0 +1,36 @@
+{{ define "categoryProducts" }}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                {{ range .CategorySideBar }}
+                    <h6>
+                        <a href="/category/{{ .VURLName }}">{{ .VName }}</a>
+                    </h6>
+                {{ end }}
+            </div>
+            <div class="col-lg-9">
+                {{ range .CategoryProducts }}
+                    <h6 class="display-6 mb-5">{{ .Category.VName }}</h6>
+                    <div class="row">
+                        {{ range .Products }}
+                            <div
+                                class="col-lg-3 mb-5 me-3 border p-3 bg-body-tertiary">
+                                <img
+                                    src="/static/images/product/{{ .VImage }}"
+                                    class="img-responsive w-100 mb-2"
+                                    alt="{{ $.CurrentCategory.VName }} - {{ .VName }}" />
+                                <div class="poppins-medium small">
+                                    {{ .VName }}
+                                </div>
+                                <div class="poppins-regular small">
+                                    &#8377;
+                                    {{ .FPrice }}
+                                </div>
+                            </div>
+                        {{ end }}
+                    </div>
+                {{ end }}
+            </div>
+        </div>
+    </div>
+{{ end }}

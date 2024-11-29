@@ -1,0 +1,43 @@
+{{ define "mainMenu" }}
+    <nav
+        class="navbar navbar-expand-lg bg-body-tertiary rounded"
+        aria-label="Main Menu">
+        <div class="container-fluid mx-5">
+            <a class="navbar-brand" href="#">shop.vernacular-architecture.in</a>
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#mainMenu"
+                aria-controls="mainMenu"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainMenu">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 pt-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#"
+                            >Login</a
+                        >
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link">Cart</a>
+                    </li>
+                    <li>
+                        <form role="search">
+                            <input
+                                class="form-control"
+                                type="search"
+                                placeholder="Search"
+                                aria-label="Search" />
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+{{ end }}
