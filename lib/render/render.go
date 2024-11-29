@@ -3,38 +3,54 @@ package render
 import (
 	"fmt"
 	"html/template"
-	"net/http"
+	"path/filepath"
 )
 
-type Templates struct {
-	Root  string
-	cache *template.Template
-}
+func NewTemplates(templateRoot string) (map[string]*template.Template, error) {
 
-func NewTemplates(templateRoot string) (*Templates, error) {
+	// Initialize a new map to act as the cache.
+	cache := map[string]*template.Template{}
 
-	tc, err := template.ParseGlob(templateRoot + "/*.go.html")
+	// Use the filepath.Glob() function to get a slice of all filepaths that
+	// match the pattern "./ui/html/pages/*.tmpl". This will essentially gives
+	// us a slice of all the filepaths for our application 'page' templates
+	// like: [ui/html/pages/home.tmpl ui/html/pages/view.tmpl]
+	pages, err := filepath.Glob(fmt.Sprintf("%s/pages/*.go.html", templateRoot))
 	if err != nil {
 		return nil, err
 	}
 
-	return &Templates{
-		Root:  templateRoot,
-		cache: tc,
-	}, nil
-}
-
-func (t *Templates) Render(w http.ResponseWriter, template string, data any) error {
-
-	// Check whether that template exists in the cache
-	if t.cache.Lookup(template) == nil {
-		return fmt.Errorf("template %s is not available in the cache", template)
+	partials, err := filepath.Glob(fmt.Sprintf("%s/partials/*.go.html", templateRoot))
+	if err != nil {
+		return nil, err
 	}
 
-	if err := t.cache.ExecuteTemplate(w, template, data); err != nil {
-		fmt.Println(template, err)
-		return err
-	}
+	base := fmt.Sprintf("%s/base.go.html", templateRoot)
 
-	return nil
+	var templates []string
+	templates = append(append(templates, base), partials...)
+
+	// Loop through the page filepaths one-by-one.
+	for _, page := range pages {
+
+		// Extract the file name (like 'home.tmpl') from the full filepath
+		// and assign it to the name variable.
+		name := filepath.Base(page)
+
+		// Create a slice containing the filepaths for our base template, any
+		// partials and the page.
+		files := append(templates, page)
+
+		// Parse the files into a template set.
+		ts, err := template.ParseFiles(files...)
+		if err != nil {
+			return nil, err
+		}
+
+		// Add the template set to the map, using the name of the page
+		// (like 'home.tmpl') as the key.
+		cache[name] = ts
+	}
+	// Return the map.
+	return cache, nil
 }

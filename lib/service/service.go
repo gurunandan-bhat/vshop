@@ -1,6 +1,7 @@
 package service
 
 import (
+	"html/template"
 	"log"
 	"net/http"
 	"vshop/lib/config"
@@ -15,11 +16,12 @@ import (
 )
 
 type Service struct {
-	Model        *model.Model
-	Muxer        *chi.Mux
-	SessionStore *cstore.SessionStore
-	StaticDir    string
-	Template     *render.Templates
+	Model         *model.Model
+	Muxer         *chi.Mux
+	SessionStore  *cstore.SessionStore
+	StaticDir     string
+	S3Root        string
+	TemplateCache map[string]*template.Template
 }
 
 func NewService(cfg *config.Config) (*Service, error) {
@@ -62,17 +64,18 @@ func NewService(cfg *config.Config) (*Service, error) {
 		log.Fatalf("Error initializing database connection: %s", err)
 	}
 
-	template, err := render.NewTemplates(cfg.TemplateRoot)
+	tmplCache, err := render.NewTemplates(cfg.TemplateRoot)
 	if err != nil {
 		log.Fatalf("Cannot build template cache: %s", err)
 	}
 
 	s := &Service{
-		SessionStore: store,
-		Model:        model,
-		Muxer:        mux,
-		StaticDir:    "./static",
-		Template:     template,
+		SessionStore:  store,
+		Model:         model,
+		Muxer:         mux,
+		StaticDir:     "./static",
+		S3Root:        cfg.S3Root,
+		TemplateCache: tmplCache,
 	}
 
 	s.setRoutes()

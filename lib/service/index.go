@@ -24,7 +24,7 @@ func (s *Service) Index(w http.ResponseWriter, r *http.Request) error {
 		PathToCurrent: pathToCurrent,
 	}
 
-	if err := s.Template.Render(w, "index", data); err != nil {
+	if err := s.render(w, "index.go.html", data); err != nil {
 		return err
 	}
 

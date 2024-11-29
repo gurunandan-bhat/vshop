@@ -1,4 +1,9 @@
-{{ define "categoryProducts" }}
+{{ define "title" }}
+    All
+    {{ .CurrentCategory.VName }}
+{{ end }}
+
+{{ define "main" }}
     <div class="container">
         <div class="row">
             <div class="col-lg-3">
@@ -10,19 +15,18 @@
             </div>
             <div class="col-lg-9">
                 {{ range .CategoryProducts }}
-                    <h6 class="display-6 mb-5">{{ .Category.VName }}</h6>
+                    <h6>{{ .Category.VName }}</h6>
                     <div class="row">
                         {{ range .Products }}
-                            <div
-                                class="col-lg-3 mb-5 me-3 border p-3 bg-body-tertiary">
+                            <div class="col-md-3 p-2 m-3 border">
                                 <img
-                                    src="/static/images/product/{{ .VImage }}"
-                                    class="img-responsive w-100 mb-2"
+                                    src="{{ $.S3Root }}/product/{{ .VImage }}"
+                                    class=" mb-3 w-100"
                                     alt="{{ $.CurrentCategory.VName }} - {{ .VName }}" />
-                                <div class="poppins-medium small">
+                                <div>
                                     {{ .VName }}
                                 </div>
-                                <div class="poppins-regular small">
+                                <div>
                                     &#8377;
                                     {{ .FPrice }}
                                 </div>

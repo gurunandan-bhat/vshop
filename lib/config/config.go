@@ -13,6 +13,7 @@ const (
 type Config struct {
 	InProduction bool   `json:"inProduction,omitempty"`
 	TemplateRoot string `json:"templateRoot,omitempty"`
+	S3Root       string `json:"s3Root,omitempty"`
 	Db           struct {
 		User                 string `json:"user,omitempty"`
 		Passwd               string `json:"passwd,omitempty"`

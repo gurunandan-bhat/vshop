@@ -14,6 +14,7 @@ type CategoryPageData struct {
 	PathToCurrent    []*model.Category
 	CategorySideBar  []*model.Category
 	CategoryProducts []model.CategoryProducts
+	S3Root           string
 }
 
 func (s *Service) CategoryProducts(w http.ResponseWriter, r *http.Request) error {
@@ -67,9 +68,10 @@ func (s *Service) CategoryProducts(w http.ResponseWriter, r *http.Request) error
 		PathToCurrent:    pathToCurrent,
 		CategorySideBar:  sideBar,
 		CategoryProducts: *products,
+		S3Root:           s.S3Root,
 	}
 
-	if err := s.Template.Render(w, "category", data); err != nil {
+	if err := s.render(w, "category.go.html", data); err != nil {
 		return err
 	}
 
