@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/gob"
 	"html/template"
 	"log"
 	"net/http"
@@ -13,7 +14,6 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/gorilla/csrf"
 )
 
 type Service struct {
@@ -51,17 +51,11 @@ func NewService(cfg *config.Config) (*Service, error) {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	csrfMiddleware := csrf.Protect(
-		[]byte(cfg.Security.CSRFKey),
-		csrf.Secure(cfg.InProduction),
-		csrf.SameSite(csrf.SameSiteStrictMode),
-	)
-	mux.Use(csrfMiddleware)
-
 	model, err := model.NewModel(cfg)
 	if err != nil {
 		log.Fatalf("Error initializing database connection: %s", err)
 	}
+	gob.Register([]CartItem{})
 	scsstore, err := scsstore.NewSCSStore(model)
 	if err != nil {
 		log.Fatalf("Error initializing session store: %s", err)
@@ -98,6 +92,9 @@ func (s *Service) setRoutes() {
 		r.Method(http.MethodGet, "/", ServiceHandler(s.Index))
 		r.Method(http.MethodGet, "/category/{vUrlName}", ServiceHandler(s.CategoryProducts))
 		r.Method(http.MethodGet, "/product/{vUrlName}", ServiceHandler(s.Product))
+		r.Method(http.MethodGet, "/checkout", ServiceHandler(s.Checkout))
+
+		r.Method(http.MethodPost, "/add-to-cart", ServiceHandler(s.HandleAddToCart))
 
 		// r.Method(http.MethodGet, "/register", ServiceHandler(s.Register))
 		// r.Method(http.MethodGet, "/tree/{vUrlName}", ServiceHandler(s.Tree))

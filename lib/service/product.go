@@ -31,7 +31,7 @@ func (s *Service) Product(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	cartProducts, err := s.GetCartProducts(r)
+	cartCount, err := s.CartCount(r)
 	if err != nil {
 		return fmt.Errorf("error fetching cart products: %w", err)
 	}
@@ -42,14 +42,16 @@ func (s *Service) Product(w http.ResponseWriter, r *http.Request) error {
 		TopCategories []*model.Category
 		PathToCurrent any
 		S3Root        string
-		CartProducts  []model.Product
+		CartCount     int
+		IncludeJS     bool
 	}{
 		Product:       *product,
 		Attributes:    *attribs,
 		TopCategories: catRoot.Children,
 		PathToCurrent: []*model.Category{catRoot},
 		S3Root:        s.S3Root,
-		CartProducts:  cartProducts,
+		CartCount:     cartCount,
+		IncludeJS:     true,
 	}
 
 	if err := s.render(w, "product.go.html", data); err != nil {

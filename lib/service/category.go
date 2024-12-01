@@ -14,7 +14,9 @@ type CategoryPageData struct {
 	PathToCurrent    []*model.Category
 	CategorySideBar  []*model.Category
 	CategoryProducts []model.CategoryProducts
+	CartCount        int
 	S3Root           string
+	IncludeJS        bool
 }
 
 func (s *Service) CategoryProducts(w http.ResponseWriter, r *http.Request) error {
@@ -62,13 +64,20 @@ func (s *Service) CategoryProducts(w http.ResponseWriter, r *http.Request) error
 		return err
 	}
 
+	cartCount, err := s.CartCount(r)
+	if err != nil {
+		return fmt.Errorf("error fetching cart products: %w", err)
+	}
+
 	data := CategoryPageData{
 		TopCategories:    topCategories,
 		CurrentCategory:  currentCategory,
 		PathToCurrent:    pathToCurrent,
 		CategorySideBar:  sideBar,
 		CategoryProducts: *products,
+		CartCount:        cartCount,
 		S3Root:           s.S3Root,
+		IncludeJS:        false,
 	}
 
 	if err := s.render(w, "category.go.html", data); err != nil {

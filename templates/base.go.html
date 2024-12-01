@@ -11,6 +11,13 @@
             <script
                 src="/static/tabler/js/tabler.min.js?1732191775"
                 defer=""></script>
+            {{ if .IncludeJS }}
+                {{ template "cartJS" }}
+            {{ end }}
         </body>
     </html>
+{{ end }}
+
+{{ define "cartJS" }}
+    <script type="text/javascript" src="/static/js/cart.js"></script>
 {{ end }}

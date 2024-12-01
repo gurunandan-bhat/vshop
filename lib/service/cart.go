@@ -1,9 +1,11 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"vshop/lib/model"
 
 	"github.com/alexedwards/scs/v2"
@@ -16,9 +18,7 @@ type CartItem struct {
 
 type Cart []CartItem
 
-func (s *Service) GetCartProducts(r *http.Request) ([]model.Product, error) {
-
-	var cartProducts []model.Product
+func (s *Service) CartCount(r *http.Request) (int, error) {
 
 	var cart = []CartItem{}
 	var ok bool
@@ -26,20 +26,47 @@ func (s *Service) GetCartProducts(r *http.Request) ([]model.Product, error) {
 		c := s.SessionManager.Get(r.Context(), "cart")
 		cart, ok = c.([]CartItem)
 		if !ok {
-			return nil, errors.New("cannot cast session cart to type cart")
-		}
-
-		prodIDs := []int32{}
-		for _, item := range cart {
-			prodIDs = append(prodIDs, item.IProdID)
-		}
-
-		var err error
-		cartProducts, err = s.Model.GetCartProducts(prodIDs)
-		if err != nil {
-			return nil, fmt.Errorf("error fetching products from cart: %w", err)
+			return 0, errors.New("cannot cast session cart to type cart")
 		}
 	}
+	cartCount := len(cart)
+
+	return cartCount, nil
+}
+
+func (s *Service) CartProducts(r *http.Request) ([]model.Product, error) {
+
+	if !s.SessionManager.Exists(r.Context(), "cart") {
+		return []model.Product{}, nil
+	}
+
+	var cartProducts []model.Product
+	var cart = []CartItem{}
+	var ok bool
+	c := s.SessionManager.Get(r.Context(), "cart")
+	cart, ok = c.([]CartItem)
+	if !ok {
+		return nil, errors.New("cannot cast session cart to type cart")
+	}
+
+	prodIDs := []int32{}
+	id2qty := make(map[int32]int32)
+
+	for _, item := range cart {
+		id2qty[item.IProdID] = item.IQty
+		prodIDs = append(prodIDs, item.IProdID)
+	}
+
+	var err error
+	cartProducts, err = s.Model.CartProducts(prodIDs)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching products from cart: %w", err)
+	}
+
+	for i, product := range cartProducts {
+		cartProducts[i].ICartQuantity = id2qty[product.IProdID]
+	}
+
 	return cartProducts, nil
 }
 
@@ -66,6 +93,43 @@ func (s *Service) AddToCart(iProdID, iQty int32, r *http.Request) error {
 	if s.SessionManager.Status(r.Context()) != scs.Modified {
 		return fmt.Errorf("session was not modified after adding %d of product id %d", iQty, iProdID)
 	}
+
+	return nil
+}
+
+type CartRequest struct {
+	ID  string `json:"iProdID"`
+	Qty string `json:"iQty"`
+}
+
+const MAX_REQUEST_BODY_BYTES = 100 * 1024
+
+func (s *Service) HandleAddToCart(w http.ResponseWriter, r *http.Request) error {
+
+	cartReq := new(CartRequest)
+	reader := http.MaxBytesReader(w, r.Body, MAX_REQUEST_BODY_BYTES)
+	err := json.NewDecoder(reader).Decode(cartReq)
+	if err != nil {
+		return fmt.Errorf("error decoding request body: %w", err)
+	}
+
+	iProdID, err := strconv.Atoi(cartReq.ID)
+	if err != nil {
+		return fmt.Errorf("error converting id %s to int: %w", cartReq.ID, err)
+	}
+
+	iQty, err := strconv.Atoi(cartReq.Qty)
+	if err != nil {
+		return fmt.Errorf("error converting quantity %s to int: %w", cartReq.Qty, err)
+	}
+
+	if err := s.AddToCart(int32(iProdID), int32(iQty), r); err != nil {
+		return fmt.Errorf("error adding to cart: %w", err)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "plain/text")
+	w.Write([]byte("worked"))
 
 	return nil
 }

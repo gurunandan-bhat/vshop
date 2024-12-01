@@ -25,6 +25,7 @@ type Product struct {
 	VImageAltTag      *string `db:"vImage_AltTag" json:"vImage_AltTag"`
 	CStatus           *string `db:"cStatus" json:"cStatus"`
 	VYTID             *string `db:"vYTID" json:"vYTID"`
+	ICartQuantity     int32   `db:"-" json:"iCartQuantity,omitempty"`
 }
 
 type ProductImage struct {
@@ -195,7 +196,13 @@ func (m *Model) CategoryProducts(vUrlName string) (*[]CategoryProducts, error) {
 	return &cpList, nil
 }
 
-func (m *Model) GetCartProducts(iProdIDs []int32) ([]Product, error) {
+func (m *Model) CartProducts(iProdIDs []int32) ([]Product, error) {
+
+	if len(iProdIDs) == 0 {
+		return []Product{}, nil
+	}
+
+	fmt.Printf("ProdIDs: %#v\n", iProdIDs)
 
 	qry := `SELECT 
 				p.iProdID, 
@@ -212,14 +219,14 @@ func (m *Model) GetCartProducts(iProdIDs []int32) ([]Product, error) {
 				prodcat c ON p.iPCatID = c.iPCatID
 			WHERE p.iProdID IN (?)`
 
-	query, args, err := sqlx.In(qry, &iProdIDs)
+	qry, args, err := sqlx.In(qry, iProdIDs)
 	if err != nil {
 		return nil, fmt.Errorf("error binding products %v: %w", iProdIDs, err)
 	}
-	query = m.DbHandle.Rebind(query)
+	qry = m.DbHandle.Rebind(qry)
 
 	products := []Product{}
-	if err = m.DbHandle.Select(&products, query, args...); err != nil {
+	if err = m.DbHandle.Select(&products, qry, args...); err != nil {
 		return nil, err
 	}
 	return products, nil
