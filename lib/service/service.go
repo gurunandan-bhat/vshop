@@ -5,10 +5,11 @@ import (
 	"log"
 	"net/http"
 	"vshop/lib/config"
-	"vshop/lib/cstore"
 	"vshop/lib/model"
 	"vshop/lib/render"
+	"vshop/lib/scsstore.go"
 
+	"github.com/alexedwards/scs/v2"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -16,12 +17,12 @@ import (
 )
 
 type Service struct {
-	Model         *model.Model
-	Muxer         *chi.Mux
-	SessionStore  *cstore.SessionStore
-	StaticDir     string
-	S3Root        string
-	TemplateCache map[string]*template.Template
+	Model          *model.Model
+	Muxer          *chi.Mux
+	SessionManager *scs.SessionManager
+	StaticDir      string
+	S3Root         string
+	TemplateCache  map[string]*template.Template
 }
 
 func NewService(cfg *config.Config) (*Service, error) {
@@ -57,25 +58,28 @@ func NewService(cfg *config.Config) (*Service, error) {
 	)
 	mux.Use(csrfMiddleware)
 
-	store := cstore.NewStore(cfg)
-
 	model, err := model.NewModel(cfg)
 	if err != nil {
 		log.Fatalf("Error initializing database connection: %s", err)
 	}
+	scsstore, err := scsstore.NewSCSStore(model)
+	if err != nil {
+		log.Fatalf("Error initializing session store: %s", err)
+	}
 
+	mux.Use()
 	tmplCache, err := render.NewTemplates(cfg.TemplateRoot)
 	if err != nil {
 		log.Fatalf("Cannot build template cache: %s", err)
 	}
 
 	s := &Service{
-		SessionStore:  store,
-		Model:         model,
-		Muxer:         mux,
-		StaticDir:     "./static",
-		S3Root:        cfg.S3Root,
-		TemplateCache: tmplCache,
+		SessionManager: scsstore,
+		Model:          model,
+		Muxer:          mux,
+		StaticDir:      "./static",
+		S3Root:         cfg.S3Root,
+		TemplateCache:  tmplCache,
 	}
 
 	s.setRoutes()
@@ -85,12 +89,18 @@ func NewService(cfg *config.Config) (*Service, error) {
 
 func (s *Service) setRoutes() {
 
-	s.Muxer.Method(http.MethodGet, "/", ServiceHandler(s.Index))
 	s.Muxer.Method(http.MethodGet, "/static/*", ServiceHandler(s.Static))
 
-	s.Muxer.Method(http.MethodGet, "/category/{vUrlName}", ServiceHandler(s.CategoryProducts))
-	s.Muxer.Method(http.MethodGet, "/product/{vUrlName}", ServiceHandler(s.Product))
-	// s.Muxer.Method(http.MethodGet, "/register", ServiceHandler(s.Register))
-	// s.Muxer.Method(http.MethodGet, "/tree/{vUrlName}", ServiceHandler(s.Tree))
-	// s.Muxer.Method(http.MethodGet, "/quick-view/product/{iProdID}", ServiceHandler(s.ProductImages))
+	s.Muxer.Group(func(r chi.Router) {
+
+		r.Use(s.SessionManager.LoadAndSave)
+
+		r.Method(http.MethodGet, "/", ServiceHandler(s.Index))
+		r.Method(http.MethodGet, "/category/{vUrlName}", ServiceHandler(s.CategoryProducts))
+		r.Method(http.MethodGet, "/product/{vUrlName}", ServiceHandler(s.Product))
+
+		// r.Method(http.MethodGet, "/register", ServiceHandler(s.Register))
+		// r.Method(http.MethodGet, "/tree/{vUrlName}", ServiceHandler(s.Tree))
+		// r.Method(http.MethodGet, "/quick-view/product/{iProdID}", ServiceHandler(s.ProductImages))
+	})
 }

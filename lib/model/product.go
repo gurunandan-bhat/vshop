@@ -195,6 +195,36 @@ func (m *Model) CategoryProducts(vUrlName string) (*[]CategoryProducts, error) {
 	return &cpList, nil
 }
 
+func (m *Model) GetCartProducts(iProdIDs []int32) ([]Product, error) {
+
+	qry := `SELECT 
+				p.iProdID, 
+				p.vName,
+				c.vName vCategoryName,
+				p.vUrlName, 
+				p.vShortDesc,
+				p.vDescription,
+				p.fPrice,
+				p.fOPrice,
+				p.cStatus
+			FROM 
+				product p JOIN
+				prodcat c ON p.iPCatID = c.iPCatID
+			WHERE p.iProdID IN (?)`
+
+	query, args, err := sqlx.In(qry, &iProdIDs)
+	if err != nil {
+		return nil, fmt.Errorf("error binding products %v: %w", iProdIDs, err)
+	}
+	query = m.DbHandle.Rebind(query)
+
+	products := []Product{}
+	if err = m.DbHandle.Select(&products, query, args...); err != nil {
+		return nil, err
+	}
+	return products, nil
+}
+
 func (m *Model) ProductImages(productID int32) (*[]ProductImage, error) {
 
 	pImages := []ProductImage{}

@@ -31,18 +31,25 @@ func (s *Service) Product(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
+	cartProducts, err := s.GetCartProducts(r)
+	if err != nil {
+		return fmt.Errorf("error fetching cart products: %w", err)
+	}
+
 	data := struct {
 		model.Product
 		Attributes    []model.ProductAttribute
 		TopCategories []*model.Category
 		PathToCurrent any
 		S3Root        string
+		CartProducts  []model.Product
 	}{
 		Product:       *product,
 		Attributes:    *attribs,
 		TopCategories: catRoot.Children,
 		PathToCurrent: []*model.Category{catRoot},
 		S3Root:        s.S3Root,
+		CartProducts:  cartProducts,
 	}
 
 	if err := s.render(w, "product.go.html", data); err != nil {
