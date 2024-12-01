@@ -1,12 +1,15 @@
 package model
 
 import (
+	"fmt"
+
 	"github.com/jmoiron/sqlx"
 )
 
 type Product struct {
 	IProdID           int32   `db:"iProdID" json:"iProdID"`
 	IPCatID           int32   `db:"iPCatID" json:"iPCatID"`
+	VCategoryName     string  `db:"vCategoryName" json:"vCategoryName"`
 	CCode             *string `db:"cCode" json:"cCode"`
 	VName             string  `db:"vName" json:"vName"`
 	VURLName          string  `db:"vUrlName" json:"vUrlName"`
@@ -37,25 +40,31 @@ type CategoryProducts struct {
 	Products *[]Product
 }
 
+type ProductAttribute struct {
+	VName  string `db:"vName" json:"vName"`
+	VValue string `db:"vValue" json:"vValue"`
+}
+
 func (m *Model) Product(iProdID int32) (*Product, error) {
 
 	p := Product{}
 	qry := `SELECT 
-				iProdID, 
-				vName, 
-				vUrlName, 
-				vShortDesc,
-				vDescription,
-				fPrice,
-				fOPrice,
-				cStatus
+				p.iProdID, 
+				p.vName,
+				c.vName vCategoryName,
+				p.vUrlName, 
+				p.vShortDesc,
+				p.vDescription,
+				p.fPrice,
+				p.fOPrice,
+				p.cStatus
 			FROM 
-				product
-			WHERE iProdID = ? 
-			ORDER BY iProdID DESC LIMIT 5`
+				product p JOIN
+				prodcat c ON p.iPCatID = c.iPCatID
+			WHERE p.iProdID = ?`
 
-	if err := m.DbHandle.QueryRowx(qry, iProdID).StructScan(&p); err != nil {
-		return nil, err
+	if err := m.DbHandle.Get(&p, qry, iProdID); err != nil {
+		return nil, fmt.Errorf("error fetching product %d: %w", iProdID, err)
 	}
 
 	return &p, nil
@@ -65,33 +74,41 @@ func (m *Model) ProductByUrl(vUrlName string) (*Product, error) {
 
 	p := Product{}
 	qry := `SELECT 
-				iProdID, 
-				vName, 
-				vImage,
-				vUrlName, 
-				vShortDesc,
-				vDescription,
-				fPrice,
-				fOPrice,
-				cStatus
+				p.iProdID, 
+				p.vName,
+				c.vName vCategoryName,
+				p.vImage,
+				p.vUrlName, 
+				p.vShortDesc,
+				p.vDescription,
+				p.fPrice,
+				p.fOPrice,
+				p.cStatus
 			FROM 
-				product
-			WHERE vUrlName = ?`
+				product p JOIN
+				prodcat c ON p.iPCatID = c.iPCatID
+			WHERE p.vUrlName = ?`
 
 	if err := m.DbHandle.Get(&p, qry, vUrlName); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error fetching product %s: %w", vUrlName, err)
 	}
 
 	return &p, nil
 }
 
-func (m *Model) ProductAttributes(iProdID int32) (*[]string, error) {
+func (m *Model) ProductAttributes(iProdID int32) (*[]ProductAttribute, error) {
 
-	attribs := []string{}
-	qry := `SELECT vValue FROM product_attrib WHERE iProdID = ?`
+	attribs := []ProductAttribute{}
+	qry := `SELECT
+				a.vName,
+				pa.vValue 
+			FROM 
+				product_attrib pa JOIN
+				attribute a ON pa.iAttribID = a.iAttribID
+			WHERE pa.iProdID = ?`
 
 	if err := m.DbHandle.Select(&attribs, qry, iProdID); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error fetching product %d: %w", iProdID, err)
 	}
 
 	return &attribs, nil
@@ -133,7 +150,7 @@ func (m *Model) CategoryProducts(vUrlName string) (*[]CategoryProducts, error) {
 
 	query, args, err := sqlx.In(query, *catIDs)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error binding category products %s: %w", vUrlName, err)
 	}
 	query = m.DbHandle.Rebind(query)
 

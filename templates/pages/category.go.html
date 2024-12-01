@@ -4,32 +4,41 @@
 {{ end }}
 
 {{ define "main" }}
-    <div class="container">
+    <div class="container my-5">
         <div class="row">
-            <div class="col-lg-3">
-                {{ range .CategorySideBar }}
-                    <h6>
-                        <a href="/category/{{ .VURLName }}">{{ .VName }}</a>
-                    </h6>
+            <div class="col-lg-2">
+                {{ if gt (.CategorySideBar | len) 1 }}
+                    <h2>Other {{ (index .PathToCurrent 0).VName }}</h2>
+                    {{ range .CategorySideBar }}
+                        {{ if ne .VName $.CurrentCategory.VName }}
+                            <h4>
+                                <a href="/category/{{ .VURLName }}"
+                                    >{{ .VName }}</a
+                                >
+                            </h4>
+                        {{ end }}
+                    {{ end }}
                 {{ end }}
             </div>
-            <div class="col-lg-9">
+            <div class="col-lg-10">
                 {{ range .CategoryProducts }}
-                    <h6>{{ .Category.VName }}</h6>
+                    <h1>{{ .Category.VName }}</h1>
                     <div class="row">
                         {{ range .Products }}
                             <div class="col-md-3 p-2 m-3 border">
-                                <img
-                                    src="{{ $.S3Root }}/product/{{ .VImage }}"
-                                    class=" mb-3 w-100"
-                                    alt="{{ $.CurrentCategory.VName }} - {{ .VName }}" />
-                                <div>
-                                    {{ .VName }}
-                                </div>
-                                <div>
-                                    &#8377;
-                                    {{ .FPrice }}
-                                </div>
+                                <a href="/product/{{ .VURLName }}">
+                                    <img
+                                        src="{{ $.S3Root }}/product/{{ .VImage }}"
+                                        class=" mb-3 w-100"
+                                        alt="{{ $.CurrentCategory.VName }} - {{ .VName }}" />
+                                    <div>
+                                        {{ .VName }}
+                                    </div>
+                                    <div>
+                                        &#8377;
+                                        {{ .FPrice }}
+                                    </div>
+                                </a>
                             </div>
                         {{ end }}
                     </div>

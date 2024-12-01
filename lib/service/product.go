@@ -33,14 +33,16 @@ func (s *Service) Product(w http.ResponseWriter, r *http.Request) error {
 
 	data := struct {
 		model.Product
-		Attributes    []string
+		Attributes    []model.ProductAttribute
 		TopCategories []*model.Category
-		PathToCurrent []*model.Category
+		PathToCurrent any
+		S3Root        string
 	}{
 		Product:       *product,
 		Attributes:    *attribs,
 		TopCategories: catRoot.Children,
 		PathToCurrent: []*model.Category{catRoot},
+		S3Root:        s.S3Root,
 	}
 
 	if err := s.render(w, "product.go.html", data); err != nil {

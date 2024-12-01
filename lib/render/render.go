@@ -6,6 +6,15 @@ import (
 	"path/filepath"
 )
 
+var mathSub = func(i, d int) int {
+
+	return i - d
+}
+
+var tmplFuncs = template.FuncMap{
+	"sub": mathSub,
+}
+
 func NewTemplates(templateRoot string) (map[string]*template.Template, error) {
 
 	// Initialize a new map to act as the cache.
@@ -42,7 +51,7 @@ func NewTemplates(templateRoot string) (map[string]*template.Template, error) {
 		files := append(templates, page)
 
 		// Parse the files into a template set.
-		ts, err := template.ParseFiles(files...)
+		ts, err := template.New("base").Funcs(tmplFuncs).ParseFiles(files...)
 		if err != nil {
 			return nil, err
 		}

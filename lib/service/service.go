@@ -89,7 +89,7 @@ func (s *Service) setRoutes() {
 	s.Muxer.Method(http.MethodGet, "/static/*", ServiceHandler(s.Static))
 
 	s.Muxer.Method(http.MethodGet, "/category/{vUrlName}", ServiceHandler(s.CategoryProducts))
-	// s.Muxer.Method(http.MethodGet, "/product/{vUrlName}", ServiceHandler(s.Product))
+	s.Muxer.Method(http.MethodGet, "/product/{vUrlName}", ServiceHandler(s.Product))
 	// s.Muxer.Method(http.MethodGet, "/register", ServiceHandler(s.Register))
 	// s.Muxer.Method(http.MethodGet, "/tree/{vUrlName}", ServiceHandler(s.Tree))
 	// s.Muxer.Method(http.MethodGet, "/quick-view/product/{iProdID}", ServiceHandler(s.ProductImages))
