@@ -12,6 +12,7 @@ const (
 
 type Config struct {
 	InProduction bool   `json:"inProduction,omitempty"`
+	AppRoot      string `json:"appRoot,omitempty"`
 	TemplateRoot string `json:"templateRoot,omitempty"`
 	S3Root       string `json:"s3Root,omitempty"`
 	CheckoutURL  string `json:"checkoutURL,omitempty"`

@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/gob"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -71,7 +72,7 @@ func NewService(cfg *config.Config) (*Service, error) {
 		SessionManager: scsstore,
 		Model:          model,
 		Muxer:          mux,
-		StaticDir:      "./static",
+		StaticDir:      fmt.Sprintf("%s/static", cfg.AppRoot),
 		S3Root:         cfg.S3Root,
 		TemplateCache:  tmplCache,
 	}
