@@ -19,7 +19,8 @@
             iQty = qtyElem.value;
         }
 
-        fetch("http://localhost:3000/add-to-cart", {
+        let calledFrom = location.href;
+        fetch("/add-to-cart", {
             method: "POST",
             body: JSON.stringify({
                 iProdID: iProdID,
@@ -37,7 +38,7 @@
             })
             .then((data) => {
                 console.log("Success: ", data);
-                location.reload;
+                window.location.href = calledFrom;
             })
             .catch((err) => {
                 console.log(err);
