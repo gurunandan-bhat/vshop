@@ -20,7 +20,7 @@ func main() {
 	}
 
 	httpServer := &http.Server{
-		Addr:    "localhost:3000",
+		Addr:    "localhost:4000",
 		Handler: service.Muxer,
 	}
 
