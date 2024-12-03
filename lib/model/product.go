@@ -25,7 +25,12 @@ type Product struct {
 	VImageAltTag      *string `db:"vImage_AltTag" json:"vImage_AltTag"`
 	CStatus           *string `db:"cStatus" json:"cStatus"`
 	VYTID             *string `db:"vYTID" json:"vYTID"`
-	ICartQuantity     int32   `db:"-" json:"iCartQuantity,omitempty"`
+}
+
+type CartProduct struct {
+	Product
+	ICartQuantity int32   `db:"-" json:"iCartQuantity,omitempty"`
+	FAmount       float64 `db:"-" json:"fAmount,omitempty"`
 }
 
 type ProductImage struct {

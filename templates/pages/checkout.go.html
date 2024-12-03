@@ -3,5 +3,284 @@
 {{ end }}
 
 {{ define "main" }}
-    <div class="container">This is the checkout page</div>
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-lg-6">
+                <h3>Delivery Details</h3>
+                <form
+                    id="delivery-details"
+                    action="{{ .CheckoutURL }}"
+                    class="needs-validation"
+                    method="post"
+                    novalidate>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label required"
+                                    >Full Name</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="fullName"
+                                    required />
+                                <div class="invalid-feedback">
+                                    Your name is required
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label class="form-label required"
+                                    >Email Address</label
+                                >
+                                <div>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        class="form-control"
+                                        aria-describedby="emailHelp"
+                                        placeholder="Enter email"
+                                        required />
+                                </div>
+                                <div class="invalid-feedback">
+                                    Email is required
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label class="form-label"
+                                    >Telephone/Mobile</label
+                                >
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text">+91</span>
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        class="form-control"
+                                        placeholder="Telephone/Mobile"
+                                        autocomplete="off" />
+                                </div>
+                            </div>
+                        </div>
+                        <small class="form-hint"
+                            >We will never share your email or your telephone
+                            number with anyone else.</small
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label required"
+                            >Address Line 1</label
+                        >
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="address-1"
+                            required />
+                        <div class="invalid-feedback">Address is required</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address Line 2</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="address-2" />
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <div class="mb-3">
+                                <label class="form-label required">City</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="city"
+                                    required />
+                                <div class="invalid-feedback">
+                                    City is required
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="mb-3">
+                                <div class="form-label required">State</div>
+                                <select
+                                    class="form-select"
+                                    name="state"
+                                    required>
+                                    <option value="">
+                                        <span class="text-secondary"
+                                            >Choose your State</span
+                                        >
+                                    </option>
+                                    <option value="AP">Andhra Pradesh</option>
+                                    <option value="AR">
+                                        Arunachal Pradesh
+                                    </option>
+                                    <option value="Assam">Assam</option>
+                                    <option value="Bihar">Bihar</option>
+                                    <option value="Chhattisgarh">
+                                        Chhattisgarh
+                                    </option>
+                                    <option value="Gujarat">Gujarat</option>
+                                    <option value="Haryana">Haryana</option>
+                                    <option value="Himachal Pradesh">
+                                        Himachal Pradesh
+                                    </option>
+                                    <option value="Jammu and Kashmir">
+                                        Jammu and Kashmir
+                                    </option>
+                                    <option value="Goa">Goa</option>
+                                    <option value="Jharkhand">Jharkhand</option>
+                                    <option value="Karnataka">Karnataka</option>
+                                    <option value="Kerala">Kerala</option>
+                                    <option value="Madhya Pradesh">
+                                        Madhya Pradesh
+                                    </option>
+                                    <option value="Maharashtra">
+                                        Maharashtra
+                                    </option>
+                                    <option value="Manipur">Manipur</option>
+                                    <option value="Meghalaya">Meghalaya</option>
+                                    <option value="Mizoram">Mizoram</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                    <option value="Odisha">Odisha</option>
+                                    <option value="Punjab">Punjab</option>
+                                    <option value="Rajasthan">Rajasthan</option>
+                                    <option value="Sikkim">Sikkim</option>
+                                    <option value="Tamil Nadu">
+                                        Tamil Nadu
+                                    </option>
+                                    <option value="Telangana">Telangana</option>
+                                    <option value="Tripura">Tripura</option>
+                                    <option value="Uttarakhand">
+                                        Uttarakhand
+                                    </option>
+                                    <option value="Uttar Pradesh">
+                                        Uttar Pradesh
+                                    </option>
+                                    <option value="West Bengal">
+                                        West Bengal
+                                    </option>
+                                    <option value="Andaman and Nicobar Islands">
+                                        Andaman and Nicobar Islands
+                                    </option>
+                                    <option value="Chandigarh">
+                                        Chandigarh
+                                    </option>
+                                    <option value="Dadra and Nagar Haveli">
+                                        Dadra and Nagar Haveli
+                                    </option>
+                                    <option value="Daman and Diu">
+                                        Daman and Diu
+                                    </option>
+                                    <option value="Delhi">Delhi</option>
+                                    <option value="Lakshadweep">
+                                        Lakshadweep
+                                    </option>
+                                    <option value="Puducherry">
+                                        Puducherry
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    State is required
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="mb-3">
+                                <label class="form-label required"
+                                    >Pin/Zip Code</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    name="zip"
+                                    required />
+                                <div class="invalid-feedback">
+                                    PIN is required
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input
+                        type="hidden"
+                        name="amount"
+                        value="{{ .TotalAmount }}" />
+                    <input type="hidden" name="country" value="India" />
+                    <div class="text-center">
+                        <input
+                            type="submit"
+                            class="btn btn-success"
+                            value="Confirm" />
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-6">
+                <h3>Your Cart</h3>
+                <div class="card mb-4">
+                    <div class="table-responsive">
+                        <table class="table table-vcenter card-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Product</th>
+                                    <th>Unit</th>
+                                    <th>Qty</th>
+                                    <th>Amt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{ range .CartProducts }}
+                                    <tr>
+                                        <td class="text-secondary">
+                                            {{ .VCategoryName }}
+                                        </td>
+                                        <td>
+                                            {{ .VName }}
+                                        </td>
+                                        <td class="text-secondary">
+                                            {{ .FPrice }}
+                                        </td>
+                                        <td class="text-secondary">
+                                            {{ .ICartQuantity }}
+                                        </td>
+                                        <td>{{ .FAmount }}</td>
+                                    </tr>
+                                {{ end }}
+                                <tr>
+                                    <td>Total</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{{ .TotalAmount }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var forms = document.querySelectorAll(".needs-validation");
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            console.log("Found element", form);
+            form.addEventListener(
+                "submit",
+                function (event) {
+                    console.log("Submitted");
+                    console.log("Triggered Submit");
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add("was-validated");
+                },
+                false,
+            );
+        });
+    </script>
 {{ end }}

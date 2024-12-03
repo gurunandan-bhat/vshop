@@ -34,13 +34,12 @@ func (s *Service) CartCount(r *http.Request) (int, error) {
 	return cartCount, nil
 }
 
-func (s *Service) CartProducts(r *http.Request) ([]model.Product, error) {
+func (s *Service) CartProducts(r *http.Request) ([]model.CartProduct, error) {
 
 	if !s.SessionManager.Exists(r.Context(), "cart") {
-		return []model.Product{}, nil
+		return []model.CartProduct{}, nil
 	}
 
-	var cartProducts []model.Product
 	var cart = []CartItem{}
 	var ok bool
 	c := s.SessionManager.Get(r.Context(), "cart")
@@ -58,12 +57,18 @@ func (s *Service) CartProducts(r *http.Request) ([]model.Product, error) {
 	}
 
 	var err error
-	cartProducts, err = s.Model.CartProducts(prodIDs)
+	products, err := s.Model.CartProducts(prodIDs)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching products from cart: %w", err)
 	}
 
-	for i, product := range cartProducts {
+	cartProducts := make([]model.CartProduct, 0)
+	for i, product := range products {
+		cartProducts = append(cartProducts, model.CartProduct{
+			Product:       product,
+			ICartQuantity: id2qty[product.IProdID],
+			FAmount:       product.FPrice * float64(id2qty[product.IProdID]),
+		})
 		cartProducts[i].ICartQuantity = id2qty[product.IProdID]
 	}
 

@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"net/http"
+	"vshop/lib/config"
 	"vshop/lib/model"
 )
 
@@ -18,21 +19,35 @@ func (s *Service) Checkout(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
+	totalAmt := 0
+	for _, p := range cartProducts {
+		totalAmt += int(p.FAmount)
+	}
+
 	catRoot, err := s.Model.CategoryTree()
+	if err != nil {
+		return err
+	}
+
+	cfg, err := config.Configuration()
 	if err != nil {
 		return err
 	}
 
 	data := struct {
 		TopCategories []*model.Category
-		CartProducts  []model.Product
+		CartProducts  []model.CartProduct
 		CartCount     int
+		TotalAmount   int
 		IncludeJS     bool
+		CheckoutURL   string
 	}{
 		TopCategories: catRoot.Children,
 		CartProducts:  cartProducts,
 		CartCount:     cartCount,
+		TotalAmount:   totalAmt,
 		IncludeJS:     false,
+		CheckoutURL:   cfg.CheckoutURL,
 	}
 
 	if err := s.render(w, "checkout.go.html", data); err != nil {
