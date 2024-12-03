@@ -37,6 +37,7 @@
             })
             .then((data) => {
                 console.log("Success: ", data);
+                location.reload;
             })
             .catch((err) => {
                 console.log(err);
