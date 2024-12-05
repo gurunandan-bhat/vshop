@@ -52,6 +52,13 @@ func NewService(cfg *config.Config) (*Service, error) {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
+	// csrfMiddleware := csrf.Protect(
+	// 	[]byte(cfg.Security.CSRFKey),
+	// 	csrf.Secure(cfg.InProduction),
+	// 	csrf.SameSite(csrf.SameSiteStrictMode),
+	// )
+	// mux.Use(csrfMiddleware)
+
 	model, err := model.NewModel(cfg)
 	if err != nil {
 		log.Fatalf("Error initializing database connection: %s", err)
@@ -95,7 +102,7 @@ func (s *Service) setRoutes() {
 		r.Method(http.MethodGet, "/product/{vUrlName}", ServiceHandler(s.Product))
 		r.Method(http.MethodGet, "/checkout", ServiceHandler(s.Checkout))
 
-		r.Method(http.MethodPost, "/add-to-cart", ServiceHandler(s.HandleAddToCart))
+		r.Method(http.MethodPost, "/product", ServiceHandler(s.Product))
 
 		// r.Method(http.MethodGet, "/register", ServiceHandler(s.Register))
 		// r.Method(http.MethodGet, "/tree/{vUrlName}", ServiceHandler(s.Tree))

@@ -21,18 +21,18 @@
                         {{ end }}
                     </ul>
                 {{ end }}
-                <form id="add-to-cart">
+                <form id="add-to-cart" action="/product" method="post">
                     <div class="row">
                         <div class="col-7">
                             <div class="row">
                                 <div class="col-3 d-flex align-items-center">
                                     <label for="quantity">Quantity:</label>
                                 </div>
-                                <div class="col-3">
+                                <div class="col-5">
                                     <select
                                         id="quantity"
                                         class="form-select"
-                                        name="quantity">
+                                        name="iQty">
                                         <option value="1" selected>1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -43,7 +43,7 @@
                                 <input
                                     type="hidden"
                                     id="product-id"
-                                    name="product-id"
+                                    name="iProdID"
                                     value="{{ .Product.IProdID }}" />
                                 <div class="col-3">
                                     <button

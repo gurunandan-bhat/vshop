@@ -205,11 +205,41 @@
                             </div>
                         </div>
                     </div>
+                    {{ range .CartProducts }}
+                        <input
+                            type="hidden"
+                            name="iProdID[]"
+                            value="{{ .IProdID }}" />
+                        <input
+                            type="hidden"
+                            name="vCategoryName[]"
+                            value="{{ .VCategoryName }}" />
+                        <input
+                            type="hidden"
+                            name="vProductName[]"
+                            value="{{ .VName }}" />"
+                        <input
+                            type="hidden"
+                            name="fPrice[]"
+                            value="{{ .FPrice }}" />
+                        <input
+                            type="hidden"
+                            name="iCartQuantity[]"
+                            value="{{ .ICartQuantity }}" />
+                        <input
+                            type="hidden"
+                            name="fAmount[]"
+                            value="{{ .FAmount }}" />
+                    {{ end }}
                     <input
                         type="hidden"
-                        name="amount"
+                        name="fTotalAmount"
                         value="{{ .TotalAmount }}" />
                     <input type="hidden" name="country" value="India" />
+                    <input
+                        type="hidden"
+                        name="iItemCount"
+                        value="{{ len .CartProducts }}" />
                     <div class="text-center">
                         <input
                             type="submit"
