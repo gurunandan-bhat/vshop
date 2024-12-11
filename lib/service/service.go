@@ -103,6 +103,7 @@ func (s *Service) setRoutes() {
 		r.Method(http.MethodGet, "/checkout", ServiceHandler(s.Checkout))
 
 		r.Method(http.MethodPost, "/product", ServiceHandler(s.Product))
+		r.Method(http.MethodPost, "/payment", ServiceHandler(s.Payment))
 
 		// r.Method(http.MethodGet, "/register", ServiceHandler(s.Register))
 		// r.Method(http.MethodGet, "/tree/{vUrlName}", ServiceHandler(s.Tree))

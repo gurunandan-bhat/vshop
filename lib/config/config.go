@@ -27,7 +27,9 @@ type Config struct {
 		AllowNativePasswords bool   `json:"allowNativePasswords,omitempty"`
 	} `json:"db,omitempty"`
 	Security struct {
-		CSRFKey string `json:"csrfKey,omitempty"`
+		CSRFKey    string `json:"csrfKey,omitempty"`
+		WorkingKey string `json:"workingKey,omitempty"`
+		IVStr      string `json:"ivStr,omitempty"`
 	} `json:"security,omitempty"`
 	Session struct {
 		Name        string `json:"name,omitempty"`
